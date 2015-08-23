@@ -105,7 +105,7 @@ class VRAE(FunctionSet):
 
         output = np.zeros((seq_length_per_z * sample_z.shape[0], self.recog_in_h.W.shape[1]))
 
-        nonlinear = {'sigmoid': F.sigmoid, 'tanh': F.tanh, 'softplus': model.softplus, 'relu': F.relu}
+        nonlinear = {'sigmoid': F.sigmoid, 'tanh': F.tanh, 'softplus': self.softplus, 'relu': F.relu}
         nonlinear_f_q = nonlinear[nonlinear_q]
         nonlinear_f_p = nonlinear[nonlinear_p]
 
@@ -116,7 +116,7 @@ class VRAE(FunctionSet):
             z = Variable(sample_z[epoch].reshape((1, sample_z.shape[1])))
 
             # compute p( x | z)
-            h0 = nonlinear_f_p( model.z(z) )
+            h0 = nonlinear_f_p( self.z(z) )
             x_gen_0 = output_a_f( self.output(h0) )
             state['gen_h'] = h0
             if gpu >= 0:
@@ -138,7 +138,7 @@ class VRAE(FunctionSet):
                 state['gen_h'] = hidden_p_t
                 x_t_1 = output_t
 
-            output[epoch*seq_length_per_z:(epoch+1)*seq_length_per_z, :] = gen_out
+            output[epoch*seq_length_per_z+1:(epoch+1)*seq_length_per_z, :] = gen_out[1:]
 
         return output
 
