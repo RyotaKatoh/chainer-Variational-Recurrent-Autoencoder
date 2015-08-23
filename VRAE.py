@@ -62,19 +62,13 @@ class VRAE(FunctionSet):
         if continuous == True:
             rec_loss = F.mean_squared_error(x_0, Variable(x_data[0].reshape((1, x_data.shape[1]))))
         else:
-            # rec_loss = self.binary_cross_entropy(Variable(x_data[0]), x_gen_0)
-            # x_0.data = np.clip(x_0.data, 0, 1)
-            x_0 = output_a_f(x_0)
-            # print x_gen_0.data
             rec_loss = F.sigmoid_cross_entropy(out, Variable(x_data[0].reshape((1, x_data.shape[1])).astype(np.int32)))
 
         x_t = x_0
 
         for i in range(1, x_data.shape[0]):
-            # x_t = Variable(x_data[i-1].reshape((1, x_data.shape[1])))
             h_t_1 = nonlinear_f_p( self.gen_in_h( x_t ) + self.gen_h_h(state['gen_h']) )
             x_t_1      = self.output(h_t_1)
-            # out        = self.output(hidden_p_t)
             state['gen_h'] = h_t_1
 
             if continuous == True:
@@ -85,7 +79,6 @@ class VRAE(FunctionSet):
                 out = x_t_1
                 rec_loss += F.sigmoid_cross_entropy(out, Variable(x_data[i].reshape((1,x_data.shape[1])).astype(np.int32)))
                 x_t = output_t = output_a_f( x_t_1 )
-                # rec_loss += self.binary_cross_entropy(Variable(x_data[i]), output_t)
 
             if gpu >= 0:
                 np_output_t = cuda.to_cpu(output_t.data)
@@ -93,8 +86,6 @@ class VRAE(FunctionSet):
             else:
                 output[i]  = output_t.data
 
-            # x_t_1 = output_t
-            # print x_t_1.data
 
         KLD = -0.0005 * F.sum(1 + q_log_sigma - q_mean**2 - F.exp(q_log_sigma))
 
