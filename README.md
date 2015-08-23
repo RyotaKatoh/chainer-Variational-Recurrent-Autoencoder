@@ -1,4 +1,4 @@
-# chainer-Variational-Reccurent-Autoencoder
+# chainer-Variational-Recurrent-Autoencoder
 
 ## Reference
 
